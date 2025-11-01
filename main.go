@@ -5,5 +5,6 @@ import (
 )
 
 func main() {
+	// its a main server where its start
 	cmd.Serve()
 }
