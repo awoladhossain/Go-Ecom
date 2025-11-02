@@ -9,7 +9,10 @@ import (
 )
 
 func Serve() {
+	manager := middleware.NewManager()
 	mux := http.NewServeMux()
+
+	mux.Handle("GET /abc", manager.With(middleware.Logger)(http.HandlerFunc(handlers.GetProductsHandler)))
 
 	// mux.Handle("GET /products", http.HandlerFunc(getProductsHandler))
 	// loggerMiddle = middleware.Logger()
