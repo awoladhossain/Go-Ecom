@@ -19,15 +19,30 @@ func NewManager() *Manager {
 
 }
 
-// * this is called receiver function
-func (mngr *Manager) With(middlewares ...Middleware) Middleware {
-	return func(next http.Handler) http.Handler {
-		h := next
-		for i := len(middlewares) - 1; i >= 0; i-- {
-			middleware := middlewares[i]
-			h = middleware(h)
-		}
-		return h
+// func (mngr *Manager) Use(middleware ...Middleware) *Manager {
+// 	mngr.globalMiddlewares = append(mngr.globalMiddlewares, middleware...)
+// 	return mngr
+// }
 
+func (mngr *Manager) Use(middleware ...Middleware) {
+	mngr.globalMiddlewares = append(mngr.globalMiddlewares, middleware...)
+}
+
+// * this is called receiver function
+func (mngr *Manager) With(next http.Handler, middlewares ...Middleware) http.Handler {
+
+	h := next
+	// for i := len(middlewares) - 1; i >= 0; i-- {
+	// 	middleware := middlewares[i]
+	// 	h = middleware(h)
+	// }
+	for _, middleware := range middlewares {
+		h = middleware(h)
 	}
+	for _, globalMiddleware := range mngr.globalMiddlewares {
+		h = globalMiddleware(h)
+	}
+
+	return h
+
 }
